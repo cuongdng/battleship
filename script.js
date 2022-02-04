@@ -11,6 +11,14 @@ var view = {
         var cell = document.getElementById(location);
         cell.setAttribute('class', 'miss');
     },
+    clearAll: function () {
+        var cells = document.querySelectorAll('#board table tr td');
+        cells.forEach((cell) => {
+            cell.setAttribute('class', '');
+        });
+        var messageArea = document.getElementById('messageArea');
+        messageArea.innerText = '';
+    },
     playFireSound: function () {
         var fireSound = document.getElementById('fire-sound');
         var soundBtn = document.querySelector('.sound-effect');
@@ -72,6 +80,17 @@ var model = {
         view.displayMessage('You missed.');
         return false;
     },
+
+    reset: function () {
+        this.shipsSunk = 0;
+        this.ships = [
+            { locations: [0, 0, 0], hits: ['', '', ''] },
+            { locations: [0, 0, 0], hits: ['', '', ''] },
+            { locations: [0, 0, 0], hits: ['', '', ''] },
+        ];
+        this.generateShipLocations();
+    },
+
     isSunk: function (ship) {
         for (var i = 0; i < this.shipLength; i++) {
             if (ship.hits[i] !== 'hit') {
@@ -142,6 +161,7 @@ var controller = {
                         this.guesses +
                         ' guesses'
                 );
+                showReplay();
             }
         }
     },
@@ -156,6 +176,7 @@ var controller = {
                         this.guesses +
                         ' guesses'
                 );
+                showReplay();
             }
         }
     },
@@ -186,9 +207,20 @@ function parseGuess(guess) {
     return null;
 }
 
+function showReplay() {
+    var replayBtn = document.querySelector('.play-again');
+    replayBtn.hidden = false;
+}
+
+function hideReplay() {
+    var replayBtn = document.querySelector('.play-again');
+    replayBtn.hidden = true;
+}
+
 function init() {
+    hideReplay();
     var backgroundMusic = document.getElementById('background-music');
-    backgroundMusic.volume = 0.6;
+    backgroundMusic.volume = 0.3;
     var cells = document.querySelectorAll('#board table tr td');
     var musicBtn = document.querySelector('.background-music');
     musicBtn.addEventListener('click', () => {
@@ -203,6 +235,7 @@ function init() {
         view.toggleSound();
     });
     handleClick(cells);
+    handleReplayBtn();
     var fireButton = document.getElementById('fireButton');
     fireButton.onclick = handleFireButton;
     var guessInput = document.getElementById('guessInput');
@@ -233,6 +266,18 @@ function handleKeyPress(e) {
         fireButton.click();
         return false;
     }
+}
+
+function handleReplayBtn() {
+    var replayBtn = document.querySelector('.play-again');
+    replayBtn.addEventListener('click', replay);
+}
+
+function replay() {
+    hideReplay();
+    view.clearAll();
+    controller.guesses = 0;
+    model.reset();
 }
 
 window.onload = init;
