@@ -244,12 +244,14 @@ function init() {
     model.generateShipLocations();
 }
 
-function handleClick(cells) {
-    cells.forEach((cell) => {
-        cell.addEventListener('click', (e) => {
-            controller.processClick(e.target.id);
+function handleClick(cells, onstage = true) {
+    if (onstage) {
+        cells.forEach((cell) => {
+            cell.addEventListener('click', (e) => {
+                controller.processClick(e.target.id);
+            });
         });
-    });
+    }
 }
 
 function handleFireButton() {
